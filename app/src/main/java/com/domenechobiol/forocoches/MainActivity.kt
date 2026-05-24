@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var repo: IgnoreListRepository
+    private lateinit var swipeGestureDetector: GestureDetectorCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSwipeNavigation() {
-        val gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
+        swipeGestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
                 e1 ?: return false
                 val diffX = e2.x - e1.x
@@ -84,10 +85,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        webView.setOnTouchListener { _, event ->
-            gestureDetector.onTouchEvent(event)
-            false
-        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        swipeGestureDetector.onTouchEvent(ev)
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun startNotificationPolling() {
