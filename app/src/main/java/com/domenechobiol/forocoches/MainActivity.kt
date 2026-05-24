@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         }
         repo = IgnoreListRepository(this)
         webView.webViewClient = ForocochesWebViewClient(this, repo)
-        webView.addJavascriptInterface(SettingsBridge(repo, webView), "Android")
+        val notifRepo = NotificationRepository(this)
+        webView.addJavascriptInterface(SettingsBridge(repo, notifRepo, webView), "Android")
     }
 
     private fun fetchIgnoreListIfNeeded() {
