@@ -4,7 +4,6 @@
 
   var ignoredUsers = JSON.parse(Android.getIgnoredUsersJson());
   var lastUpdated = Android.getLastUpdatedMs();
-  var favUsers = JSON.parse(Android.getFavoriteUsersJson());
   var kwEnabled = Android.getKeywordFilterEnabled();
   var keywords = JSON.parse(Android.getKeywordsJson());
 
@@ -40,19 +39,6 @@
     }).join('');
   }
 
-  function buildFavoriteRows(favs) {
-    if (favs.length === 0)
-      return '<div style="color:#555;font-size:12px;padding:6px 0;">Sin usuarios favoritos</div>';
-    return favs.map(function(f) {
-      return '<div style="display:flex;justify-content:space-between;align-items:center;' +
-             'padding:5px 0;border-bottom:1px solid #222;">' +
-             '<span style="color:#bbb;font-size:13px;">@' + escAttr(f.username) + '</span>' +
-             '<button onclick="fcRemoveFavorite(\'' + escJs(f.username) + '\')" style="' +
-             'background:none;border:none;color:#ff5555;cursor:pointer;font-size:13px;padding:2px 6px;">✕</button>' +
-             '</div>';
-    }).join('');
-  }
-
   function buildKeywordRows(kws) {
     if (kws.length === 0)
       return '<div style="color:#555;font-size:12px;padding:6px 0;">Sin palabras clave</div>';
@@ -64,16 +50,6 @@
              'background:none;border:none;color:#ff5555;cursor:pointer;font-size:13px;padding:2px 6px;">✕</button>' +
              '</div>';
     }).join('');
-  }
-
-  function getCurrentProfileInfo() {
-    var params = new URLSearchParams(window.location.search);
-    var userId = params.get('u');
-    if (!userId || !window.location.href.includes('member.php')) return null;
-    var nameEl = document.querySelector('.member_username, .profileusername, h1, h2');
-    var username = nameEl ? nameEl.textContent.trim() : null;
-    if (!username || username.length > 40) return null;
-    return { userId: userId, username: username };
   }
 
   function toggle(id) {
@@ -104,8 +80,6 @@
            ';bottom:3px;background:#fff;border-radius:50%;transition:left 0.2s;"></span>' +
            '</span></label>';
   }
-
-  var profileInfo = getCurrentProfileInfo();
 
   // Overlay (transparente, solo para cerrar al tocar fuera)
   var overlay = document.createElement('div');
@@ -147,24 +121,6 @@
     '<div style="color:#444;font-size:10px;margin-top:6px;">Lista sync: ' + timeAgo(lastUpdated) + '</div>' +
     '</div>';
 
-  // — Fila: favoritos
-  var addFavInner = profileInfo
-    ? '<button id="fc-add-fav-btn" onclick="fcAddCurrentFavorite()" style="' +
-      'width:100%;margin-top:6px;background:none;border:1px solid #444;color:#888;' +
-      'border-radius:4px;padding:4px;font-size:12px;cursor:pointer;">' +
-      '★ Añadir @' + escAttr(profileInfo.username) + '</button>'
-    : '';
-  var favRow =
-    '<div style="' + rowStyle() + '">' +
-    '<span style="color:#888;font-size:13px;">Favoritos' +
-    '<span id="fc-fav-count" style="color:#555;margin-left:6px;">' + favUsers.length + '</span></span>' +
-    manageBtn('fc-fav-section') +
-    '</div>' +
-    '<div id="fc-fav-section" style="display:none;padding-bottom:8px;">' +
-    '<div id="fc-fav-list">' + buildFavoriteRows(favUsers) + '</div>' +
-    addFavInner +
-    '</div>';
-
   // — Fila: filtro político
   var kwRow =
     '<div style="' + rowStyle() + '">' +
@@ -194,7 +150,7 @@
     '🧪 Simular notificación</button>' +
     '</div>';
 
-  panel.innerHTML = ignoredRow + favRow + kwRow + debugRow;
+  panel.innerHTML = ignoredRow + kwRow + debugRow;
 
   container.appendChild(panel);
   container.appendChild(arrow);
@@ -280,28 +236,6 @@
     setTimeout(function() {
       if (btn) { btn.textContent = '🧪 Simular notificación'; btn.disabled = false; }
     }, 5000);
-  };
-
-  window.fcRemoveFavorite = function(username) {
-    Android.removeFavoriteUser(username);
-    var favs = JSON.parse(Android.getFavoriteUsersJson());
-    var list = document.getElementById('fc-fav-list');
-    if (list) list.innerHTML = buildFavoriteRows(favs);
-    var cnt = document.getElementById('fc-fav-count');
-    if (cnt) cnt.textContent = favs.length;
-  };
-
-  window.fcAddCurrentFavorite = function() {
-    var info = getCurrentProfileInfo();
-    if (!info) return;
-    Android.addFavoriteUser(info.username, info.userId);
-    var favs = JSON.parse(Android.getFavoriteUsersJson());
-    var list = document.getElementById('fc-fav-list');
-    if (list) list.innerHTML = buildFavoriteRows(favs);
-    var cnt = document.getElementById('fc-fav-count');
-    if (cnt) cnt.textContent = favs.length;
-    var btn = document.getElementById('fc-add-fav-btn');
-    if (btn) { btn.textContent = '✓ Añadido'; btn.disabled = true; }
   };
 
   // FAB

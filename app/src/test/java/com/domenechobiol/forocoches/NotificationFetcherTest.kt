@@ -36,14 +36,4 @@ class NotificationFetcherTest {
         assertEquals(12, fetcher.parseNotifCount(html))
     }
 
-    @Test
-    fun `parseLatestThreadId devuelve null si no hay hilos`() {
-        assertNull(fetcher.parseLatestThreadId("<html><body></body></html>"))
-    }
-
-    @Test
-    fun `parseLatestThreadId extrae el primer threadId`() {
-        val html = """<a href="showthread.php?t=99999">Título del hilo</a>"""
-        assertEquals("99999", fetcher.parseLatestThreadId(html))
-    }
 }

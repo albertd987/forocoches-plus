@@ -14,16 +14,10 @@ class NotificationFetcher {
         // FC usa <span class="user-notifications">N</span>: primero PMs, segundo menciones
         private val COUNT_SPAN = Regex("""<span class="user-notifications">(\d+)</span>""", RegexOption.IGNORE_CASE)
 
-        // Thread más reciente de un usuario
-        private val THREAD_ID = Regex("""showthread\.php\?t=(\d+)""")
     }
 
     suspend fun fetchMainPage(cookie: String): String = withContext(Dispatchers.IO) {
         get("$BASE_URL/", cookie)
-    }
-
-    suspend fun fetchUserThreadsPage(cookie: String, userId: String): String = withContext(Dispatchers.IO) {
-        get("$BASE_URL/search.php?do=finduser&userid=$userId&contenttype=vBForum_Thread&showposts=0", cookie)
     }
 
     fun parseAllCounts(html: String): Pair<Int, Int> {
@@ -36,9 +30,6 @@ class NotificationFetcher {
     fun parsePmCount(html: String): Int = parseAllCounts(html).first
 
     fun parseNotifCount(html: String): Int = parseAllCounts(html).second
-
-    fun parseLatestThreadId(html: String): String? =
-        THREAD_ID.find(html)?.groupValues?.get(1)
 
     private fun get(url: String, cookie: String): String {
         val conn = URL(url).openConnection() as HttpURLConnection

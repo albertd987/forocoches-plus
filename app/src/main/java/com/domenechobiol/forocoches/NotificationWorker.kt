@@ -21,7 +21,6 @@ class NotificationWorker(
 
         return try {
             checkMainNotifications(cookie, fetcher, notifRepo)
-            checkFavoriteUsers(cookie, fetcher, notifRepo)
             Result.success()
         } catch (e: Exception) {
             android.util.Log.e("FC_NOTIF", "worker exception: ${e.message}", e)
@@ -76,29 +75,5 @@ class NotificationWorker(
         repo.setLastNotifCount(notifCount)
     }
 
-    private suspend fun checkFavoriteUsers(
-        cookie: String,
-        fetcher: NotificationFetcher,
-        repo: NotificationRepository
-    ) {
-        val favorites = repo.getFavoriteUsers()
-        favorites.entries.forEachIndexed { index, (username, userId) ->
-            if (userId.isBlank()) return@forEachIndexed
-            val html = fetcher.fetchUserThreadsPage(cookie, userId)
-            val latestThreadId = fetcher.parseLatestThreadId(html) ?: return@forEachIndexed
-            val lastSeen = repo.getLastSeenThreadId(username)
-            if (lastSeen != null && latestThreadId != lastSeen) {
-                NotificationHelper.show(
-                    applicationContext,
-                    NotificationHelper.ID_FAVORITE_BASE + index,
-                    "FC+ Nuevo hilo",
-                    "@$username ha subido un hilo nuevo",
-                    1
-                )
-            }
-            if (lastSeen == null || latestThreadId != lastSeen) {
-                repo.setLastSeenThreadId(username, latestThreadId)
-            }
-        }
-    }
+
 }

@@ -49,5 +49,4 @@ object NotificationHelper {
 
     const val ID_PM = 1001
     const val ID_NOTIF = 1002
-    const val ID_FAVORITE_BASE = 2000
 }

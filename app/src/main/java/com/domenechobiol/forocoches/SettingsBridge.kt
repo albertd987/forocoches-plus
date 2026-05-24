@@ -50,25 +50,6 @@ class SettingsBridge(
     }
 
     @JavascriptInterface
-    fun getFavoriteUsersJson(): String {
-        val favs = notifRepo.getFavoriteUsers()
-        if (favs.isEmpty()) return "[]"
-        return "[" + favs.entries.joinToString(",") {
-            "{\"username\":\"${escapeJson(it.key)}\",\"userId\":\"${escapeJson(it.value)}\"}"
-        } + "]"
-    }
-
-    @JavascriptInterface
-    fun addFavoriteUser(username: String, userId: String) {
-        notifRepo.addFavoriteUser(username, userId)
-    }
-
-    @JavascriptInterface
-    fun removeFavoriteUser(username: String) {
-        notifRepo.removeFavoriteUser(username)
-    }
-
-    @JavascriptInterface
     fun testNotifications() {
         notifRepo.setLastPmCount(0)
         notifRepo.setLastNotifCount(0)

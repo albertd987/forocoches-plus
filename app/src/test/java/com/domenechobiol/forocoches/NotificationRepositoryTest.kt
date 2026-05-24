@@ -41,42 +41,4 @@ class NotificationRepositoryTest {
         assertEquals(7, repo.getLastNotifCount())
     }
 
-    @Test
-    fun `getFavoriteUsers devuelve lista vacía inicialmente`() {
-        assertTrue(repo.getFavoriteUsers().isEmpty())
-    }
-
-    @Test
-    fun `addFavoriteUser persiste username y userId`() {
-        repo.addFavoriteUser("LuoJi", "882386")
-        val favs = repo.getFavoriteUsers()
-        assertEquals(1, favs.size)
-        assertEquals("882386", favs["LuoJi"])
-    }
-
-    @Test
-    fun `removeFavoriteUser elimina el usuario`() {
-        repo.addFavoriteUser("LuoJi", "882386")
-        repo.removeFavoriteUser("LuoJi")
-        assertTrue(repo.getFavoriteUsers().isEmpty())
-    }
-
-    @Test
-    fun `getLastSeenThreadId devuelve null inicialmente`() {
-        assertNull(repo.getLastSeenThreadId("LuoJi"))
-    }
-
-    @Test
-    fun `setLastSeenThreadId persiste y getLastSeenThreadId lo devuelve`() {
-        repo.setLastSeenThreadId("LuoJi", "12345")
-        assertEquals("12345", repo.getLastSeenThreadId("LuoJi"))
-    }
-
-    @Test
-    fun `removeFavoriteUser elimina también el lastSeenThreadId`() {
-        repo.addFavoriteUser("LuoJi", "882386")
-        repo.setLastSeenThreadId("LuoJi", "12345")
-        repo.removeFavoriteUser("LuoJi")
-        assertNull(repo.getLastSeenThreadId("LuoJi"))
-    }
 }
