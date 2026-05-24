@@ -4,14 +4,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.webkit.CookieManager
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,7 +19,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var repo: IgnoreListRepository
-    private lateinit var swipeGestureDetector: GestureDetectorCompat
+
+    private var touchDownX = 0f
+    private var touchDownY = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 
         webView = findViewById(R.id.webview)
         configureWebView()
-        setupSwipeNavigation()
         webView.loadUrl("https://forocoches.com/foro/")
         fetchIgnoreListIfNeeded()
         requestNotificationPermission()
@@ -56,6 +55,24 @@ class MainActivity : AppCompatActivity() {
         webView.addJavascriptInterface(SettingsBridge(repo, notifRepo, webView), "Android")
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> {
+                touchDownX = ev.x
+                touchDownY = ev.y
+            }
+            MotionEvent.ACTION_UP -> {
+                val diffX = ev.x - touchDownX
+                val diffY = ev.y - touchDownY
+                if (abs(diffX) > abs(diffY) * 2f && abs(diffX) > 100f) {
+                    if (diffX > 0 && webView.canGoBack()) { webView.goBack(); return true }
+                    if (diffX < 0 && webView.canGoForward()) { webView.goForward(); return true }
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     private fun fetchIgnoreListIfNeeded() {
         if (repo.getLastUpdated() != 0L) return
         lifecycleScope.launch {
@@ -70,31 +87,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupSwipeNavigation() {
-        swipeGestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                e1 ?: return false
-                val diffX = e2.x - e1.x
-                val diffY = e2.y - e1.y
-                if (abs(diffX) < abs(diffY) * 1.5f) return false
-                if (abs(diffX) < 80f || abs(velocityX) < 200f) return false
-                return if (diffX > 0) {
-                    if (webView.canGoBack()) { webView.goBack(); true } else false
-                } else {
-                    if (webView.canGoForward()) { webView.goForward(); true } else false
-                }
-            }
-        })
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        swipeGestureDetector.onTouchEvent(ev)
-        return super.dispatchTouchEvent(ev)
-    }
-
     private fun startNotificationPolling() {
         lifecycleScope.launch {
-            delay(5_000) // espera inicial para que el WebView cargue y guarde cookies
+            delay(5_000)
             while (true) {
                 val cookie = CookieManager.getInstance().getCookie("https://forocoches.com")
                 if (!cookie.isNullOrBlank()) {
