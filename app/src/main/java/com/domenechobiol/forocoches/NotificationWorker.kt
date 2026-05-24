@@ -34,10 +34,6 @@ class NotificationWorker(
     ) {
         val html = fetcher.fetchMainPage(cookie)
 
-        // Debug: log HTML snippet to verify patterns (remove when patterns confirmed)
-        android.util.Log.d("FC_NOTIF", "html_length=${html.length}")
-        val pmIdx = html.indexOf("private.php")
-        if (pmIdx >= 0) android.util.Log.d("FC_NOTIF", "pm_context: ${html.substring(pmIdx, minOf(html.length, pmIdx + 300))}")
 
         val pmCount = fetcher.parsePmCount(html)
         val notifCount = fetcher.parseNotifCount(html)
