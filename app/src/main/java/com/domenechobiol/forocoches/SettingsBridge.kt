@@ -1,14 +1,18 @@
 package com.domenechobiol.forocoches
 
+import android.content.Context
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import kotlinx.coroutines.runBlocking
 
 class SettingsBridge(
     private val repo: IgnoreListRepository,
     private val notifRepo: NotificationRepository,
-    private val webView: WebView
+    private val webView: WebView,
+    private val context: Context = webView.context
 ) {
 
     @JavascriptInterface
@@ -69,6 +73,15 @@ class SettingsBridge(
     @JavascriptInterface
     fun removeFavoriteUser(username: String) {
         notifRepo.removeFavoriteUser(username)
+    }
+
+    @JavascriptInterface
+    fun testNotifications() {
+        notifRepo.setLastPmCount(0)
+        notifRepo.setLastNotifCount(0)
+        WorkManager.getInstance(context).enqueue(
+            OneTimeWorkRequestBuilder<NotificationWorker>().build()
+        )
     }
 
     private fun notifyRefreshDone() {

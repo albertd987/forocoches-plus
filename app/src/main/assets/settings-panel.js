@@ -116,6 +116,10 @@
 
   panel.innerHTML +=
     '<div style="border-top:1px solid #333;margin-top:12px;padding-top:12px;">' +
+    '<div style="font-size:12px;color:#888;margin-bottom:8px;">🧪 Debug</div>' +
+    '<button onclick="fcTestNotifications()" style="width:100%;background:none;border:1px solid #888;color:#888;border-radius:4px;padding:4px;font-size:12px;cursor:pointer;" id="fc-test-btn">Simular notificación (resetea contadores + lanza worker)</button>' +
+    '</div>' +
+    '<div style="border-top:1px solid #333;margin-top:12px;padding-top:12px;">' +
     '<div style="font-size:12px;color:#888;margin-bottom:8px;">Usuarios favoritos <span style="font-size:10px;">(avisa de nuevos hilos)</span></div>' +
     '<div id="fc-fav-list">' + buildFavoriteRows(favUsers) + '</div>' +
     addFavBtn +
@@ -172,6 +176,15 @@
     panel.querySelector('#fc-toggle-track').style.background = this.checked ? '#00e5cc' : '#555';
     panel.querySelector('#fc-toggle-thumb').style.left = this.checked ? '21px' : '3px';
   });
+
+  window.fcTestNotifications = function() {
+    var btn = document.getElementById('fc-test-btn');
+    if (btn) { btn.textContent = '⏳ Lanzado — pon la app en background'; btn.disabled = true; }
+    Android.testNotifications();
+    setTimeout(function() {
+      if (btn) { btn.textContent = 'Simular notificación (resetea contadores + lanza worker)'; btn.disabled = false; }
+    }, 5000);
+  };
 
   window.fcRemoveFavorite = function(username) {
     Android.removeFavoriteUser(username);
