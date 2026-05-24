@@ -3,7 +3,7 @@
   const keywordsEnabled = window._fcKeywordsEnabled !== false;
   const keywords = (window._fcKeywords || []).map(k => k.toLowerCase());
 
-  const isThreadPage = window.location.href.includes('showthread.php');
+  function isThreadPage() { return window.location.href.includes('showthread.php'); }
 
   // ── Thread list filtering ────────────────────────────────────────────────
 
@@ -76,14 +76,29 @@
 
   // ── Inicialización ───────────────────────────────────────────────────────
 
-  if (isThreadPage) {
+  if (isThreadPage()) {
     filterPosts();
   } else {
     filterThreads(getThreadRows());
   }
 
+  // Detectar navegación SPA (pushState) para re-filtrar al entrar en un hilo
+  var lastUrl = location.href;
+  var origPushState = history.pushState.bind(history);
+  history.pushState = function() {
+    origPushState.apply(history, arguments);
+    var newUrl = location.href;
+    if (newUrl !== lastUrl) {
+      lastUrl = newUrl;
+      if (isThreadPage()) setTimeout(filterPosts, 400);
+    }
+  };
+  window.addEventListener('popstate', function() {
+    if (isThreadPage()) setTimeout(filterPosts, 400);
+  });
+
   const observer = new MutationObserver(function (mutations) {
-    if (isThreadPage) {
+    if (isThreadPage()) {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType !== 1) continue;
