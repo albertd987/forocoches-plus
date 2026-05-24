@@ -43,7 +43,7 @@ class ForocochesWebViewClient(
     }
 
     private fun isProfilePage(url: String): Boolean =
-        url.contains("profile.php") && !url.contains("do=ignorelist")
+        (url.contains("profile.php") || url.contains("member.php")) && !url.contains("do=ignorelist")
 
     private fun injectCss(view: WebView, css: String) {
         val escaped = css
