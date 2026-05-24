@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl("https://forocoches.com/foro/")
         fetchIgnoreListIfNeeded()
         requestNotificationPermission()
+        startNotificationPolling()
     }
 
     private fun configureWebView() {
@@ -60,6 +61,48 @@ class MainActivity : AppCompatActivity() {
                 val users = IgnoreListFetcher().fetch(cookie)
                 if (users.isNotEmpty()) repo.setIgnoredUsers(users)
             } catch (_: Exception) { }
+        }
+    }
+
+    private fun startNotificationPolling() {
+        lifecycleScope.launch {
+            delay(5_000) // espera inicial para que el WebView cargue y guarde cookies
+            while (true) {
+                val cookie = CookieManager.getInstance().getCookie("https://forocoches.com")
+                if (!cookie.isNullOrBlank()) {
+                    try {
+                        val notifRepo = NotificationRepository(this@MainActivity)
+                        val fetcher = NotificationFetcher()
+                        val html = fetcher.fetchMainPage(cookie)
+                        val (pmCount, notifCount) = fetcher.parseAllCounts(html)
+
+                        val lastPm = notifRepo.getLastPmCount()
+                        if (lastPm >= 0 && pmCount > lastPm) {
+                            val diff = pmCount - lastPm
+                            NotificationHelper.show(
+                                this@MainActivity,
+                                NotificationHelper.ID_PM,
+                                "FC+ Mensajes Privados",
+                                "Tienes $diff nuevo${if (diff == 1) "" else "s"} mensaje${if (diff == 1) "" else "s"} privado${if (diff == 1) "" else "s"}"
+                            )
+                        }
+                        notifRepo.setLastPmCount(pmCount)
+
+                        val lastNotif = notifRepo.getLastNotifCount()
+                        if (lastNotif >= 0 && notifCount > lastNotif) {
+                            val diff = notifCount - lastNotif
+                            NotificationHelper.show(
+                                this@MainActivity,
+                                NotificationHelper.ID_NOTIF,
+                                "FC+ Notificaciones",
+                                "Tienes $diff nueva${if (diff == 1) "" else "s"} notificación${if (diff == 1) "" else "es"}"
+                            )
+                        }
+                        notifRepo.setLastNotifCount(notifCount)
+                    } catch (_: Exception) { }
+                }
+                delay(60_000)
+            }
         }
     }
 
