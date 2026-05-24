@@ -21,8 +21,10 @@ class SettingsBridgeTest {
     fun setUp() {
         val ctx = ApplicationProvider.getApplicationContext<Context>()
         repo = IgnoreListRepository(ctx)
+        val notifRepo = NotificationRepository(ctx)
+        val keywordRepo = KeywordRepository(ctx)
         val webView = WebView(ctx)
-        bridge = SettingsBridge(repo, webView)
+        bridge = SettingsBridge(repo, notifRepo, keywordRepo, webView)
     }
 
     @Test
