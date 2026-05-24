@@ -60,8 +60,9 @@
     '</span></label>' +
     '</div>' +
 
-    '<div style="color:#888;font-size:12px;margin-bottom:12px;">' +
-    'Actualizado: ' + timeAgo(lastUpdated) + ' · ' + ignoredUsers.length + ' ignorados' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+    '<span style="color:#888;font-size:12px;">Actualizado: ' + timeAgo(lastUpdated) + ' · ' + ignoredUsers.length + ' ignorados</span>' +
+    '<button id="fc-refresh-btn" onclick="fcRefresh()" style="background:none;border:1px solid #00e5cc;color:#00e5cc;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;">↻ Actualizar</button>' +
     '</div>' +
 
     '<div id="fc-ignored-list" style="max-height:220px;overflow-y:auto;">' +
@@ -81,6 +82,31 @@
     var meta = panel.querySelector('div[style*="Actualizado"]');
     if (meta) meta.textContent = 'Actualizado: ' + timeAgo(Android.getLastUpdatedMs()) +
       ' · ' + remaining + ' ignorados';
+  };
+
+  window.fcRefresh = function() {
+    var btn = document.getElementById('fc-refresh-btn');
+    if (btn) { btn.textContent = '↻ ...'; btn.disabled = true; }
+    Android.triggerRefresh();
+    setTimeout(function() {
+      var users = JSON.parse(Android.getIgnoredUsersJson());
+      var list = document.getElementById('fc-ignored-list');
+      if (list) {
+        list.innerHTML = users.length === 0
+          ? '<div style="color:#666;font-size:12px;padding:4px 0;">No hay usuarios ignorados</div>'
+          : users.map(function(u) {
+              return '<div style="display:flex;justify-content:space-between;align-items:center;' +
+                     'padding:6px 0;border-bottom:1px solid #2a2a2a;" data-user="' + escAttr(u) + '">' +
+                     '<span style="color:#ccc;">@' + escAttr(u) + '</span>' +
+                     '<button onclick="fcRemoveUser(\'' + escJs(u) + '\')" style="' +
+                     'background:none;border:none;color:#ff5555;cursor:pointer;font-size:13px;padding:2px 8px;">✕</button>' +
+                     '</div>';
+            }).join('');
+      }
+      var meta = panel.querySelector('span[style*="Actualizado"]');
+      if (meta) meta.textContent = 'Actualizado: ' + timeAgo(Android.getLastUpdatedMs()) + ' · ' + users.length + ' ignorados';
+      if (btn) { btn.textContent = '↻ Actualizar'; btn.disabled = false; }
+    }, 4000);
   };
 
   panel.querySelector('#fc-hide-toggle').addEventListener('change', function() {

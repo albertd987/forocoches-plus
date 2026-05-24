@@ -1,8 +1,12 @@
 package com.domenechobiol.forocoches
 
+import android.content.Context
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 
-class SettingsBridge(private val repo: IgnoreListRepository) {
+class SettingsBridge(private val repo: IgnoreListRepository, private val context: Context) {
 
     @JavascriptInterface
     fun getHideMode(): String = repo.getHideMode()
@@ -30,4 +34,10 @@ class SettingsBridge(private val repo: IgnoreListRepository) {
 
     @JavascriptInterface
     fun getLastUpdatedMs(): Long = repo.getLastUpdated()
+
+    @JavascriptInterface
+    fun triggerRefresh() {
+        val request = OneTimeWorkRequestBuilder<IgnoreListWorker>().build()
+        WorkManager.getInstance(context).enqueue(request)
+    }
 }
