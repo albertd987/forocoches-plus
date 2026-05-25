@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.domenechobiol.forocoches'
+    namespace 'com.fcplus.forocoches'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.domenechobiol.forocoches"
+        applicationId "com.fcplus.forocoches"
         minSdk 24
         targetSdk 34
         versionCode 1

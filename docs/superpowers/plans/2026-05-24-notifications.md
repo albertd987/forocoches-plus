@@ -51,7 +51,7 @@ Estructura actual relevante:
 
 ```kotlin
 // app/src/test/java/com/domenechobiol/forocoches/NotificationRepositoryTest.kt
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -138,7 +138,7 @@ class NotificationRepositoryTest {
 - [ ] **Step 2: Run tests — verificar que fallan**
 
 ```
-.\gradlew test --tests "com.domenechobiol.forocoches.NotificationRepositoryTest" 2>&1 | tail -5
+.\gradlew test --tests "com.fcplus.forocoches.NotificationRepositoryTest" 2>&1 | tail -5
 ```
 Esperado: `FAILED` (clase no existe)
 
@@ -146,7 +146,7 @@ Esperado: `FAILED` (clase no existe)
 
 ```kotlin
 // app/src/main/java/com/domenechobiol/forocoches/NotificationRepository.kt
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import android.content.Context
 
@@ -194,7 +194,7 @@ class NotificationRepository(context: Context) {
 - [ ] **Step 4: Run tests — verificar que pasan**
 
 ```
-.\gradlew test --tests "com.domenechobiol.forocoches.NotificationRepositoryTest" 2>&1 | tail -5
+.\gradlew test --tests "com.fcplus.forocoches.NotificationRepositoryTest" 2>&1 | tail -5
 ```
 Esperado: `BUILD SUCCESSFUL`
 
@@ -219,7 +219,7 @@ git commit -m "feat: NotificationRepository para contadores y usuarios favoritos
 
 ```kotlin
 // app/src/test/java/com/domenechobiol/forocoches/NotificationFetcherTest.kt
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -273,7 +273,7 @@ class NotificationFetcherTest {
 - [ ] **Step 2: Run tests — verificar que fallan**
 
 ```
-.\gradlew test --tests "com.domenechobiol.forocoches.NotificationFetcherTest" 2>&1 | tail -5
+.\gradlew test --tests "com.fcplus.forocoches.NotificationFetcherTest" 2>&1 | tail -5
 ```
 Esperado: `FAILED`
 
@@ -281,7 +281,7 @@ Esperado: `FAILED`
 
 ```kotlin
 // app/src/main/java/com/domenechobiol/forocoches/NotificationFetcher.kt
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -345,7 +345,7 @@ class NotificationFetcher {
 - [ ] **Step 4: Run tests — verificar que pasan**
 
 ```
-.\gradlew test --tests "com.domenechobiol.forocoches.NotificationFetcherTest" 2>&1 | tail -5
+.\gradlew test --tests "com.fcplus.forocoches.NotificationFetcherTest" 2>&1 | tail -5
 ```
 Esperado: `BUILD SUCCESSFUL`
 
@@ -367,7 +367,7 @@ git commit -m "feat: NotificationFetcher con parsers para PM, notificaciones y �
 
 ```kotlin
 // app/src/main/java/com/domenechobiol/forocoches/NotificationHelper.kt
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -435,7 +435,7 @@ git commit -m "feat: NotificationHelper con canal y helper de show"
 
 ```kotlin
 // app/src/main/java/com/domenechobiol/forocoches/NotificationWorker.kt
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import android.content.Context
 import android.webkit.CookieManager
@@ -557,7 +557,7 @@ En `app/src/main/AndroidManifest.xml`, añadir dentro de `<manifest>` antes de `
 
 Reemplazar el contenido de `ForocochesApp.kt`:
 ```kotlin
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import android.app.Application
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -641,7 +641,7 @@ git commit -m "feat: permisos de notificación, canal y scheduling de Notificati
 
 Reemplazar el contenido de `SettingsBridge.kt`:
 ```kotlin
-package com.domenechobiol.forocoches
+package com.fcplus.forocoches
 
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
@@ -738,7 +738,7 @@ webView.addJavascriptInterface(SettingsBridge(repo, notifRepo, webView), "Androi
 
 Y añadir el import:
 ```kotlin
-import com.domenechobiol.forocoches.NotificationRepository
+import com.fcplus.forocoches.NotificationRepository
 ```
 
 - [ ] **Step 3: Build y verificar**
