@@ -17,10 +17,10 @@ jobs:
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
         with:
           tweet: |
-            🚀 Nueva versión de Forocoches+: ${{ github.event.release.tag_name }}
+            🚀 Forocoches+ ${{ github.event.release.tag_name }} ya disponible
 
-            ${{ github.event.release.body }}
+            Filtra usuarios, bloquea anuncios y recibe notificaciones de MPs.
 
-            Descarga el APK: ${{ github.event.release.html_url }}
+            Descarga: ${{ github.event.release.html_url }}
 
             #Forocoches #Android
